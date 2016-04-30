@@ -22,8 +22,16 @@ SetupState.prototype.preload = function () {
   this.game.load.audio('lo', 'asset/sfx/lo.wav');
 };
 SetupState.prototype.create = function () {
-  this.game.state.start('BeginLevel', true, false, 0);
+  this.game.stage.backgroundColor = 0x111111;
+
+  var spaceKey = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+  spaceKey.onUp.add(function () {
+    this.game.state.start('BeginLevel', true, false, 0);
+  }, this);
 }
+SetupState.prototype.shutdown = function () {
+  this.game.input.keyboard.removeKey(Phaser.KeyCode.SPACEBAR);
+};
 
 
 var main = function () {
