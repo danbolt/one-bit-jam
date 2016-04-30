@@ -1,12 +1,17 @@
 var Constants = {
   NoteLength: 200,
 
+  NoteVolume: 0.1,
+
   Directions: {
     East: 0,
     West: 2,
     South: 1,
     North: 3
-  }
+  },
+
+  LoColor: 0x0D355E,
+  HiColor: 0x90D5F0,
 };
 
 var Patterns = {
@@ -43,6 +48,15 @@ var View = function () {
   this.facing = Constants.Directions.North;
 };
 View.prototype.init = function () {
+  // game scaling
+  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+  this.game.scale.refresh();
+  this.game.scale.pageAlignHorizontally = true;
+  this.game.scale.pageAlignVertically = true;
+
+  // gamepad input
+  this.game.input.gamepad.start();
+
   this.lo = null;
   this.hi = null;
   this.isHigh = false;
@@ -77,10 +91,10 @@ View.prototype.shutdown = function () {
 View.prototype.setView = function (isHigh) {
   this.isHigh = isHigh;
 
-  this.game.stage.backgroundColor = isHigh ? 0xFFFFFF : 0x000000;
+  this.game.stage.backgroundColor = isHigh ? Constants.HiColor : Constants.LoColor;
 
-  this.hi.volume = isHigh ? 0.5 : 0;
-  this.lo.volume = isHigh ? 0 : 0.5;
+  this.hi.volume = isHigh ? Constants.NoteVolume : 0;
+  this.lo.volume = isHigh ? 0 : Constants.NoteVolume;
 };
 View.prototype.playPattern = function (key) {
   if (this.patternLoop) {
@@ -99,7 +113,7 @@ View.prototype.playPattern = function (key) {
   }, this);
 };
 var main = function () {
-  var game = new Phaser.Game(1, 1);
+  var game = new Phaser.Game(32, 32);
   game.state.add('View', View, false);
   game.state.start('View');
 };
