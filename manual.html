@@ -8,6 +8,41 @@
     <style>
     body {
       font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+
+      margin: 0px auto;
+      margin-right: 1em auto;
+      margin-left: 1em auto;
+
+      padding: 1em;
+
+      background-color: #D2E5FF;
+      color: #0A346B;
+    }
+
+    a {
+      color: #A40D01;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #copyright {
+      text-align: center;
+    }
+
+      /* Larger than mobile screen */
+    @media (min-width: 40.0rem) {
+    }
+    /* Larger than tablet screen */
+    @media (min-width: 80.0rem) {
+
+    }
+    /* Larger than desktop screen */
+    @media (min-width: 800px) {
+      body {
+        max-width: 800px;
+      }
     }
     </style>
   </head>
@@ -28,10 +63,11 @@
     <p>Visualizing the cavern can be difficult, so I'd recommend kicking it old school and mapping out your environment with a pen and paper as you move. That way you can find your way arround much more quickly.</p>
     <p>Remember, you can do it! I believe in you.</p>
     <h2>Postmortem</h2>
-    <p>I found the restrictions for bit-jam both incredibly endearing and incredibly frustrating! While making something interesting with only two states of output seemed incredibly hard, it also encouraged me to make the most interesting game possible</p><p>I settled on the first-person maze game idea pretty quickly and had time to think about it, so programming it was pretty straightforward. The game could have been </p>
+    <p>I found the restrictions for bit-jam both incredibly endearing and incredibly frustrating! While making something interesting with only two states of output seemed incredibly hard, it also encouraged me to make the most out of the limitations and actually produce a game. In the end, I was pretty satisfied that I actually figured something out!</p><p>I settled on the first-person maze game idea pretty quickly and had time to think about it, so programming it was pretty straightforward. I ended up copy/pasting a lot of code for certain parts, which was annoying since my code-smell detectors were going off like crazy. Overall though, I'm happy with how quickly I was able to implement the design.</p>
+    <p>Next time though, I'm definetly doing something with graphics again!</p>
     <h2>Links</h2>
     <p>You can play the game <a href="https://danbolt.itch.io/thaius-and-the-ice-caverns">here</a> on itch.io. You'll want to use a modern browser, if possible. If you also participated in bit jam, be sure to let me know you did! I'd love to play your game too.</p>
     <p>This game was made possible with the <a href="http://phaser.io/">Phaser 2</a> library. I'd reccomend it for 2D browser games!</p>
-    <p>© 2016 Daniel Savage</p>
+    <p id="copyright">© 2016 Daniel Savage</p>
   </body>
 </html>
