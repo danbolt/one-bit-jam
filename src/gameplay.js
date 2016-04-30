@@ -69,6 +69,11 @@ Gameplay.prototype.create = function () {
     this.showFacingObject();
   }, this);
 
+  var muteKey = this.game.input.keyboard.addKey(Phaser.KeyCode.M);
+  muteKey.onUp.add(function () {
+    this.game.sound.mute = !(this.game.sound.mute);
+  }, this);
+
   this.showFacingObject();
 };
 Gameplay.prototype.shutdown = function () {
@@ -76,6 +81,8 @@ Gameplay.prototype.shutdown = function () {
   this.hi.destroy();
 
   this.game.input.keyboard.removeKey(Phaser.KeyCode.UP);
+
+  this.game.input.keyboard.removeKey(Phaser.KeyCode.M);
 };
 Gameplay.prototype.setView = function (isHigh) {
   this.isHigh = isHigh;

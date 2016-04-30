@@ -28,9 +28,16 @@ SetupState.prototype.create = function () {
   spaceKey.onUp.add(function () {
     this.game.state.start('BeginLevel', true, false, 0, false);
   }, this);
+
+  var muteKey = this.game.input.keyboard.addKey(Phaser.KeyCode.M);
+  muteKey.onUp.add(function () {
+    this.game.sound.mute = !(this.game.sound.mute);
+  }, this);
 }
 SetupState.prototype.shutdown = function () {
   this.game.input.keyboard.removeKey(Phaser.KeyCode.SPACEBAR);
+
+  this.game.input.keyboard.removeKey(Phaser.KeyCode.M);
 };
 
 var main = function () {

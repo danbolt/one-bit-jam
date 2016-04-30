@@ -26,6 +26,11 @@ BeginLevel.prototype.create = function () {
   this.hi = this.game.add.sound('hi', 0, true);
   this.hi.play();
 
+  var muteKey = this.game.input.keyboard.addKey(Phaser.KeyCode.M);
+  muteKey.onUp.add(function () {
+    this.game.sound.mute = !(this.game.sound.mute);
+  }, this);
+
   var patternToPlay = this.levelIndex === 0 ? 'startJingle' : 'nextJingle';
   this.playPattern(patternToPlay);
   this.game.time.events.add(Constants.NoteLength * Patterns[patternToPlay].length, function () {
@@ -40,7 +45,7 @@ BeginLevel.prototype.shutdown = function () {
   this.lo.destroy();
   this.hi.destroy();
 
-  this.game.input.keyboard.removeKey(Phaser.KeyCode.UP);
+  this.game.input.keyboard.removeKey(Phaser.KeyCode.M);
 };
 BeginLevel.prototype.setView = function (isHigh) {
   this.isHigh = isHigh;
