@@ -5,8 +5,8 @@ var Constants = {
 
   Directions: {
     East: 0,
-    West: 2,
     South: 1,
+    West: 2,
     North: 3
   },
 
@@ -14,25 +14,39 @@ var Constants = {
   HiColor: 0x90D5F0,
 };
 
+// List of patterns
 var Patterns = {
   wall: [0],
   open: [1],
   a: [0, 1],
-  b: [0, 0, 1, 1, 0, 0],
+  goal: [1, 0, 1, 1, 0, 0],
   bp: [1, 1, 0, 0, 1, 1],
   c: [0, 1, 0, 0, 1, 1],
 };
 
+// Hash for mapping map tiles to patterns
 var MapKeyToPattern = {};
 MapKeyToPattern['wa'] = 'wall';
 MapKeyToPattern[0] = 'open';
+MapKeyToPattern['gl'] = 'goal';
 
 var Maps = [
 {
-  data: [['wa', 'wa', 'wa', "wa"],
-         ["wa",   0,     0, "wa"],
-         ["wa", "st",  "wa", "wa"],
-         ["wa", "wa", "wa", "wa"],
+  data: [['wa', 'wa', 'wa', "wa", "wa", "wa", "wa"],
+         ["wa",    0,    0, "gl", "wa", "wa", "wa"],
+         ["wa",    0, "wa", "wa", "wa", "wa", "wa"],
+         ["wa", "st", "wa", "wa", "wa", "wa", "wa"],
+         ["wa", "wa", "wa", "wa", "wa", "wa", "wa"],
+  ],
+},
+{
+  data: [['wa', "wa", 'wa', "wa", "wa", "wa", "wa", "wa"],
+         ["wa", "wa", "wa", "wa", "wa", "wa", "wa", "wa"],
+         ["wa", "wa", "wa", "wa", "gl",    0, "wa", "wa"],
+         ["wa", "wa", "wa", "wa", "wa",    0, "wa", "wa"],
+         ["wa",    0,    0,    0, "wa",    0, "wa", "wa"],
+         ["wa",    0, "st",    0,    0,    0, "wa", "wa"],
+         ["wa", "wa", "wa", "wa", "wa", "wa", "wa", "wa"],
   ],
 },
 ];
@@ -46,13 +60,23 @@ var View = function () {
   this.currentPattern = null;
 
   this.facing = Constants.Directions.North;
+
+  this.currentLevel = null;
+  this.currentX = 0;
+  this.currentY = 0;
 };
-View.prototype.init = function () {
+View.prototype.init = function (levelIndex) {
   // game scaling
   this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   this.game.scale.refresh();
   this.game.scale.pageAlignHorizontally = true;
   this.game.scale.pageAlignVertically = true;
+
+  // enable crisp rendering
+  this.game.stage.smoothed = false;
+  this.game.renderer.renderSession.roundPixels = true;  
+  Phaser.Canvas.setImageRenderingCrisp(this.game.canvas);
+  PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
 
   // gamepad input
   this.game.input.gamepad.start();
@@ -65,7 +89,11 @@ View.prototype.init = function () {
   this.currentPattern = null;
   this.patternIndex = 0;
 
+  this.currentLevel = levelIndex !== undefined ? levelIndex : 0;
+
   this.facing = Constants.Directions.North;
+  this.currentX = 0;
+  this.currentY = 0;
 };
 View.prototype.preload = function () {
   this.game.load.audio('hi', 'asset/sfx/hi.wav');
@@ -79,14 +107,40 @@ View.prototype.create = function () {
   this.hi.play();
 
   this.setView(false);
-  this.playPattern('wall');
-  this.game.time.events.add(1000, function () { this.playPattern('bp'); }, this);
 
+  for (var i = 0; i < Maps[this.currentLevel].data.length; i++) {
+    for (var j = 0; j < Maps[this.currentLevel].data[i].length; j++) {
+      if (Maps[this.currentLevel].data[i][j] === "st") {
+        this.currentX = j;
+        this.currentY = i;
+      }
+    }
+  }
   this.facing = Constants.Directions.North;
+
+  var forwardKey = this.game.input.keyboard.addKey(Phaser.KeyCode.UP);
+  forwardKey.onDown.add(function () {
+    this.stepForward();
+    this.showFacingObject();
+  }, this);
+  var rightKey = this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT);
+  rightKey.onDown.add(function () {
+    this.turn(1);
+    this.showFacingObject();
+  }, this);
+  var leftKey = this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT);
+  leftKey.onDown.add(function () {
+    this.turn(-1);
+    this.showFacingObject();
+  }, this);
+
+  this.showFacingObject();
 };
 View.prototype.shutdown = function () {
   this.lo.destroy();
   this.hi.destroy();
+
+  this.game.input.keyboard.removeKey(Phaser.KeyCode.UP);
 };
 View.prototype.setView = function (isHigh) {
   this.isHigh = isHigh;
@@ -112,8 +166,95 @@ View.prototype.playPattern = function (key) {
     this.setView(this.currentPattern[this.patternIndex]);
   }, this);
 };
+View.prototype.getFacingForwardMapKey = function () {
+  var targetX = this.currentX;
+  var targetY = this.currentY;
+
+  switch (this.facing) {
+    case Constants.Directions.North:
+    targetY--;
+    break;
+    case Constants.Directions.East:
+    targetX++;
+    break;
+    case Constants.Directions.South:
+    targetY++;
+    break;
+    case Constants.Directions.West:
+    targetX--;
+    break;
+  }
+
+  return Maps[this.currentLevel].data[targetY][targetX];
+};
+View.prototype.showFacingObject = function () {
+  this.playPattern(MapKeyToPattern[this.getFacingForwardMapKey()]);
+};
+View.prototype.stepForward = function () {
+  var targetX = this.currentX;
+  var targetY = this.currentY;
+
+  switch (this.facing) {
+    case Constants.Directions.North:
+    targetY--;
+    break;
+    case Constants.Directions.East:
+    targetX++;
+    break;
+    case Constants.Directions.South:
+    targetY++;
+    break;
+    case Constants.Directions.West:
+    targetX--;
+    break;
+  }
+
+  if (Maps[this.currentLevel].data[targetY][targetX] !== "wa") {
+    this.currentX = targetX;
+    this.currentY = targetY;
+  }
+
+  if (Maps[this.currentLevel].data[targetY][targetX] === "gl") {
+    this.game.state.start('View', true, false, (this.currentLevel + 1) % Maps.length);
+  }
+};
+View.prototype.turn = function (angles) {
+  this.facing = (this.facing + angles + 4) % 4;
+};
+
+// debug map exploration
+View.prototype.render = function () {
+  for (var i = 0; i < Maps[this.currentLevel].data.length; i++) {
+    for (var j = 0; j < Maps[this.currentLevel].data[i].length; j++) {
+      if (Maps[this.currentLevel].data[i][j] === "wa") {
+        this.game.debug.geom(new Phaser.Rectangle(j * 3, i * 3, 3, 3));
+      } else if (Maps[this.currentLevel].data[i][j] === "gl") {
+        this.game.debug.geom(new Phaser.Rectangle(j * 3, i * 3, 3, 3), 'pink');
+      }
+    }
+  }
+
+  this.game.debug.geom(new Phaser.Rectangle(this.currentX * 3, this.currentY * 3, 3, 3), 'red');
+  switch (this.facing) {
+    case Constants.Directions.North:
+    this.game.debug.geom(new Phaser.Rectangle(this.currentX * 3 + 1, this.currentY * 3, 1, 1), 'blue');
+    break;
+    case Constants.Directions.East:
+    this.game.debug.geom(new Phaser.Rectangle(this.currentX * 3 + 2, this.currentY * 3 + 1, 1, 1), 'blue');
+    break;
+    case Constants.Directions.South:
+    this.game.debug.geom(new Phaser.Rectangle(this.currentX * 3 + 1, this.currentY * 3 + 2, 1, 1), 'blue');
+    break;
+    case Constants.Directions.West:
+    this.game.debug.geom(new Phaser.Rectangle(this.currentX * 3, this.currentY * 3 + 1, 1, 1), 'blue');
+    break;
+  }
+};
+
 var main = function () {
   var game = new Phaser.Game(32, 32);
   game.state.add('View', View, false);
-  game.state.start('View');
+  game.state.start('View', true, false, 0);
 };
+
+
