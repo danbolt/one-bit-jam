@@ -14,21 +14,6 @@ var Gameplay = function () {
   this.hasKey = false;
 };
 Gameplay.prototype.init = function (levelIndex) {
-  // game scaling
-  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-  this.game.scale.refresh();
-  this.game.scale.pageAlignHorizontally = true;
-  this.game.scale.pageAlignVertically = true;
-
-  // enable crisp rendering
-  this.game.stage.smoothed = false;
-  this.game.renderer.renderSession.roundPixels = true;  
-  Phaser.Canvas.setImageRenderingCrisp(this.game.canvas);
-  PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
-
-  // gamepad input
-  this.game.input.gamepad.start();
-
   this.lo = null;
   this.hi = null;
   this.isHigh = false;
@@ -45,8 +30,6 @@ Gameplay.prototype.init = function (levelIndex) {
   this.hasKey = false;
 };
 Gameplay.prototype.preload = function () {
-  this.game.load.audio('hi', 'asset/sfx/hi.wav');
-  this.game.load.audio('lo', 'asset/sfx/lo.wav');
 };
 Gameplay.prototype.create = function () {
   this.lo = this.game.add.sound('lo', 0, true);
@@ -180,7 +163,7 @@ Gameplay.prototype.stepForward = function () {
   }
 
   if (Maps[this.currentLevel].data[targetY][targetX] === "gl") {
-    this.game.state.start('Gameplay', true, false, (this.currentLevel + 1) % Maps.length);
+    this.game.state.start('BeginLevel', true, false, (this.currentLevel + 1) % Maps.length);
   }
 };
 Gameplay.prototype.stepBackward = function () {
@@ -216,7 +199,7 @@ Gameplay.prototype.stepBackward = function () {
   }
 
   if (Maps[this.currentLevel].data[targetY][targetX] === "gl") {
-    this.game.state.start('Gameplay', true, false, (this.currentLevel + 1) % Maps.length);
+    this.game.state.start('BeginLevel', true, false, (this.currentLevel + 1) % Maps.length);
   }
 };
 Gameplay.prototype.turn = function (angles) {

@@ -19,11 +19,13 @@ var Patterns = {
   wall: [0],
   open: [1],
   a: [0, 1],
-  goal: [1, 0, 1, 1, 0, 0],
+  goal: [0, 1, 1, 0, 0, 1],
   bp: [1, 1, 0, 0, 1, 1],
   c: [0, 1, 0, 0, 1, 1],
   lock: [1, 1, 0, 0, 0, 1],
   key: [0, 1, 0, 0, 1, 0],
+  startJingle: [0, 1, 0, 1, 0, 1, 0,],
+  nextJingle: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,],
 };
 
 // Hash for mapping map tiles to patterns
