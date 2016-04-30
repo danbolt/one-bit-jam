@@ -163,7 +163,7 @@ Gameplay.prototype.stepForward = function () {
   }
 
   if (Maps[this.currentLevel].data[targetY][targetX] === "gl") {
-    this.game.state.start('BeginLevel', true, false, (this.currentLevel + 1) % Maps.length);
+    this.game.state.start('BeginLevel', true, false, (this.currentLevel + 1) % Maps.length, true);
   }
 };
 Gameplay.prototype.stepBackward = function () {
@@ -199,7 +199,7 @@ Gameplay.prototype.stepBackward = function () {
   }
 
   if (Maps[this.currentLevel].data[targetY][targetX] === "gl") {
-    this.game.state.start('BeginLevel', true, false, (this.currentLevel + 1) % Maps.length);
+    this.game.state.start('BeginLevel', true, false, (this.currentLevel + 1) % Maps.length, true);
   }
 };
 Gameplay.prototype.turn = function (angles) {

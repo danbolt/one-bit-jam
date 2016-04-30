@@ -6,7 +6,7 @@ var BeginLevel = function () {
   this.patternLoop = null
   this.currentPattern = null;
 };
-BeginLevel.prototype.init = function (levelIndex) {
+BeginLevel.prototype.init = function (levelIndex, completedLevel) {
 
   this.lo = null;
   this.hi = null;
@@ -17,6 +17,7 @@ BeginLevel.prototype.init = function (levelIndex) {
   this.patternIndex = 0;
 
   this.levelIndex = levelIndex; // this is passed onto the gameplay state
+  this.completedLevel = completedLevel;
 };
 BeginLevel.prototype.create = function () {
   this.lo = this.game.add.sound('lo', 0, true);
@@ -28,7 +29,11 @@ BeginLevel.prototype.create = function () {
   var patternToPlay = this.levelIndex === 0 ? 'startJingle' : 'nextJingle';
   this.playPattern(patternToPlay);
   this.game.time.events.add(Constants.NoteLength * Patterns[patternToPlay].length, function () {
-    this.game.state.start('Gameplay', true, false, this.levelIndex);
+    if (this.levelIndex === 0 && this.completedLevel === true) {
+      this.game.state.start('SetupState', true, false);
+    } else {
+      this.game.state.start('Gameplay', true, false, this.levelIndex);
+    }
   }, this);
 };
 BeginLevel.prototype.shutdown = function () {

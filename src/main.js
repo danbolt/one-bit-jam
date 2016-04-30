@@ -26,13 +26,12 @@ SetupState.prototype.create = function () {
 
   var spaceKey = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
   spaceKey.onUp.add(function () {
-    this.game.state.start('BeginLevel', true, false, 0);
+    this.game.state.start('BeginLevel', true, false, 0, false);
   }, this);
 }
 SetupState.prototype.shutdown = function () {
   this.game.input.keyboard.removeKey(Phaser.KeyCode.SPACEBAR);
 };
-
 
 var main = function () {
   var game = new Phaser.Game(32, 32);
